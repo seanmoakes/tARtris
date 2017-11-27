@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class TetrominoO : Tetromino
 {
-    // float lastFall = 0;
-    // float lastLeft = 0;
-    // float lastRight = 0;
-    // bool isDownKeyHeld = false;
-    // bool isLeftKeyHeld = false;
-    // bool isRightKeyHeld = false;
-
     // Update is called once per frame
     void Update()
     {

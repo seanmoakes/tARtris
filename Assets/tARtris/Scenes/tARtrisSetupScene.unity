@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657928, g: 0.49641335, b: 0.5748179, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_PlaneDetection: 1
   m_LightEstimation: 0
   m_PointCloud: 0
-  m_Scale: 200
+  m_Scale: 25
   pointOfInterest: {x: 0, y: 0, z: 0}
 --- !u!4 &587798663
 Transform:
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_PlanePrefab: {fileID: 1372998203143648, guid: 2c9427dfd106e4aefa08705ac5020bf9,
     type: 2}
   tARtrisSceneStr: tARtrisScene
-  m_LevelGeometrySize: 110
+  m_LevelGeometrySize: 20
   m_LevelPlacementPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &591397291
 GameObject:

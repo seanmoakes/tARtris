@@ -110,7 +110,7 @@ namespace Mongoose
 		void LoadTARtrisScene()
 		{
 			SceneManager.LoadScene (tARtrisSceneStr);
-			GetComponent<ARPlaneChooser> ().enabled = false;
+			GetComponent<TARtrisPlaneChooser> ().enabled = false;
 		}
 
         private IEnumerator MouseHandler()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TetrominoJLSTZ : Tetromino
+public class TetrominoI : Tetromino
 {
     public void ClockWise()
     {
@@ -11,19 +11,19 @@ public class TetrominoJLSTZ : Tetromino
         {
             case RotateState.Zero:
                 desiredRotation = RotateState.Right;
-                testInputs = new int[] { 0, 0, -1, 0, -1, 1, 0, -2, -1, -2 };
+                testInputs = new int[] { 0, 0,  -2, 0,  1, 0,  -2, -1,  1, 2 };
                 break;
             case RotateState.Right:
                 desiredRotation = RotateState.Two;
-                testInputs = new int[] { 0, 0, 1, 0, 1, -1, 0, 2, 1, 2 };
+                testInputs = new int[] { 0, 0,  -1, 0,  2, 0,  -1, 2,  2, -1 };
                 break;
             case RotateState.Two:
                 desiredRotation = RotateState.Left;
-                testInputs = new int[] { 0, 0, 1, 0, 1, 1, 0, -2, 1, -2 };
+                testInputs = new int[] { 0, 0,  2, 0,  -1, 0,  2, 1,  -1, -2 };
                 break;
             case RotateState.Left:
                 desiredRotation = RotateState.Zero;
-                testInputs = new int[] { 0, 0, -1, 0, -1, -1, 0, 2, -1, 2 };
+                testInputs = new int[] { 0, 0,  1, 0,  -2, 0,  1, -2, -2, 1 };
                 break;
         }
         Vector3 pos = transform.GetChild(4).position;
@@ -46,19 +46,19 @@ public class TetrominoJLSTZ : Tetromino
         {
             case RotateState.Zero:
                 desiredRotation = RotateState.Left;
-                testInputs = new int[] { 0, 0, 1, 0, 1, 1, 0, -2, 1, -2 };
+                testInputs = new int[]{ 0, 0,  -1, 0,  2, 0,  -1, 2,  2, -1 };
                 break;
             case RotateState.Right:
                 desiredRotation = RotateState.Zero;
-                testInputs = new int[] { 0, 0, 1, 0, 1, -1, 0, 2, 1, 2 };
+                testInputs = new int[] { 0, 0,  2, 0,  -1, 0,  2, 1,  -1, -2 };
                 break;
             case RotateState.Two:
                 desiredRotation = RotateState.Right;
-                testInputs = new int[] { 0, 0, -1, 0, -1, 1, 0, -2, -1, -2 };
+                testInputs = new int[] { 0, 0,  1, 0,  -2, 0,  1, -2,  -2, 1 };
                 break;
             case RotateState.Left:
                 desiredRotation = RotateState.Two;
-                testInputs = new int[] { 0, 0, -1, 0, -1, -1, 0, 2, -1, 2 };
+                testInputs = new int[] { 0, 0,  -2, 0,  1, 0,  -2, -1,  1, 2 };
                 break;
         }
         Vector3 pos = transform.GetChild(4).position;

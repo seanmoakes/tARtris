@@ -4,4 +4,19 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/tARtris/Scenes/tARtrisSetupScene.unity
+    guid: 13547735eb09c4fe7865cebbcbedf9f2
+  - enabled: 1
+    path: Assets/tARtris/Scenes/tARtrisScene.unity
+    guid: 16fa4f8bfba9e3a429be7b63faf6e364
+  - enabled: 0
+    path: Assets/TanksNetworkingAR/Scenes/ARSetupScene.unity
+    guid: 080ac1b98781a4b7ba0ae27b39577f1b
+  - enabled: 0
+    path: Assets/TanksNetworkingAR/Scenes/LobbyScene.unity
+    guid: 36e75a5ad0c2df847b41f2c664f486c6
+  - enabled: 0
+    path: Assets/TanksNetworkingAR/Scenes/CompleteMainScene.unity
+    guid: 53dbee9b5f0f43642ab7e99460ca86d2
