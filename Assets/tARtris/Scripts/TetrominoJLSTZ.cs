@@ -1,6 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿//using System.Collections;
+// using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class TetrominoJLSTZ : Tetromino
 {
@@ -76,34 +77,38 @@ public class TetrominoJLSTZ : Tetromino
 
     void Update()
     {
+        Vector2 axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
         isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
         isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);
         isRightKeyHeld = Input.GetKey(KeyCode.RightArrow);
 
         //Left or right movement
-        if (isLeftKeyHeld && !isRightKeyHeld && Time.time - lastLeft >= 0.1)
+        if (
+            (isLeftKeyHeld && !isRightKeyHeld || axes.x < -0.5f)
+            && Time.time - lastLeft >= 0.1)
         {
             moveLeft();
             lastLeft = Time.time;
         }
-        else if (isRightKeyHeld && !isLeftKeyHeld && Time.time - lastRight >= 0.1)
+        else if (
+            (isRightKeyHeld && !isLeftKeyHeld || axes.x > 0.5)
+            && Time.time - lastRight >= 0.1)
         {
             moveRight();
             lastRight = Time.time;
         }
-        // 
-        // No need to rotate for Tetromino O
-        if (Input.GetKeyDown(KeyCode.B))
+
+        if (Input.GetKeyDown(KeyCode.B) || CrossPlatformInputManager.GetButtonDown("Clockwise"))
         {
             ClockWise();
         }
-        if (Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.V) || CrossPlatformInputManager.GetButtonDown("AntiClockwise"))
         {
             AntiClockWise();
         }
 
         //Move down the screen
-        if (isDownKeyHeld && Time.time - lastFall >= 0.1)
+        if ((isDownKeyHeld || axes.y < -0.5) && Time.time - lastFall >= 0.1)
         {
             moveDown();
             lastFall = Time.time;

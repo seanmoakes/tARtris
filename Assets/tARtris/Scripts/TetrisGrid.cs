@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class TetrisGrid : MonoBehaviour
 {
-
+    private int temp = 0;
     // Use this for initialization
     public static int w = 10;
-    public static int h = 24;
+    public static int h = 22;
     public static Transform[,] grid = new Transform[w, h];
 
     public static Vector2 roundVec2(Vector2 v)
@@ -17,7 +17,7 @@ public class TetrisGrid : MonoBehaviour
 
     public static bool insideBorder(Vector2 pos)
     {
-        return ((int)pos.x >= 0 && (int)pos.x < w && (int)pos.y >= 0);
+        return ((int)pos.x >= 0 && (int)pos.x < w && (int)pos.y >= 0) && pos.y <= h;
     }
 
     public static void deleteRow(int y)
