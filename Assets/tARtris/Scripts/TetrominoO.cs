@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// using System.Collections;
+// using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
@@ -8,7 +8,7 @@ public class TetrominoO : Tetromino
     // Update is called once per frame
     void Update()
     {
-        Vector2 axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"),CrossPlatformInputManager.GetAxis("Vertical")); 
+        Vector2 axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
         isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
         isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);
         isRightKeyHeld = Input.GetKey(KeyCode.RightArrow);
@@ -22,7 +22,7 @@ public class TetrominoO : Tetromino
             lastLeft = Time.time;
         }
         else if (
-            (isRightKeyHeld && !isLeftKeyHeld || axes.x > 0.5) 
+            (isRightKeyHeld && !isLeftKeyHeld || axes.x > 0.5)
             && Time.time - lastRight >= 0.1)
         {
             moveRight();

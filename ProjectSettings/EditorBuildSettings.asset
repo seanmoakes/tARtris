@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/tARtris/Scenes/tARtrisScene.unity
     guid: 16fa4f8bfba9e3a429be7b63faf6e364
   - enabled: 0
+    path: Assets/UnityARInterface/Examples/MatchScale/MatchScale.unity
+    guid: e618ebb9861db9349a964dc4dab17402
+  - enabled: 0
     path: Assets/TanksNetworkingAR/Scenes/ARSetupScene.unity
     guid: 080ac1b98781a4b7ba0ae27b39577f1b
   - enabled: 0
