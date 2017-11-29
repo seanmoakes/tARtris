@@ -19,12 +19,6 @@ public class TARtrisManager : MonoBehaviour
     [HideInInspector]
     public bool m_GameIsOver = false;
 
-    //Various UI references to hide the screen between rounds.
-    [Space]
-    [Header("UI")]
-    public CanvasGroup m_FadingScreen;
-    public CanvasGroup m_EndRoundScreen;
-
     private int m_Level;                    // Which level the game is currently on.
     private WaitForSeconds m_StartWait;     // Used to have a delay whilst the game starts.
     private WaitForSeconds m_EndWait;       // Used to have a delay before the game is over.
@@ -40,7 +34,6 @@ public class TARtrisManager : MonoBehaviour
         m_StartWait = new WaitForSeconds(m_StartDelay);
         m_EndWait = new WaitForSeconds(m_EndDelay);
 
-    //    StartCoroutine(GameLoop());
 	}
 
     static public void GameOver(bool isOver)
@@ -64,24 +57,5 @@ public class TARtrisManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    /*
 
-
-    private IEnumerator GameLoop()
-    {
-        yield return StartCoroutine(GameStarting());
-    }
-
-    private IEnumerator GameStarting()
-    {
-
-    }
-
-    void NewGame()
-    {
-        TetrisGrid.grid = new Transform[TetrisGrid.w, TetrisGrid.h];
-    }
-	// Update is called once per frame
-	void Update () {
-    */
 }

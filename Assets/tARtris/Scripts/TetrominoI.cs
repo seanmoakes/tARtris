@@ -76,6 +76,8 @@ public class TetrominoI : Tetromino
 
     void Update()
     {
+        // setGhostTransform();
+
         Vector2 axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
         isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
         isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);

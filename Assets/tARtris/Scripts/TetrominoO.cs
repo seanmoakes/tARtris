@@ -8,6 +8,7 @@ public class TetrominoO : Tetromino
     // Update is called once per frame
     void Update()
     {
+        // setGhostTransform();
         Vector2 axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
         isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
         isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);

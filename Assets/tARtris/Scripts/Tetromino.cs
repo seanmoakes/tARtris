@@ -1,5 +1,5 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum RotateState
@@ -21,6 +21,8 @@ public class Tetromino : MonoBehaviour
     public RotateState currentRotation = RotateState.Zero;
     public RotateState desiredRotation = RotateState.Zero;
     public bool gameOver = false;
+
+
     public bool isValidGridPos()
     {
         foreach (Transform child in transform)
@@ -42,6 +44,27 @@ public class Tetromino : MonoBehaviour
         }
         return true;
     }
+    // public bool isGhostValidGridPos()
+    // {
+    //     foreach (Transform child in ghostBlock.transform)
+    //     {
+    //         if (child != transform.GetChild(4))
+    //         {
+    //             Vector2 v = TetrisGrid.roundVec2(child.position);
+    //             if (!TetrisGrid.insideBorder(v))
+    //             {
+    //                 return false;
+    //             }
+
+    //             if (TetrisGrid.grid[(int)v.x, (int)v.y] != null &&
+    //                TetrisGrid.grid[(int)v.x, (int)v.y].parent != transform)
+    //             {
+    //                 return false;
+    //             }
+    //         }
+    //     }
+    //     return true;
+    // }
 
     public void updateGrid()
     {
@@ -119,6 +142,17 @@ public class Tetromino : MonoBehaviour
     {
     }
 
+    // public void setGhostTransform()
+    // {
+    //     ghostBlock.transform.rotation = this.transform.rotation;
+    //     ghostBlock.transform.position = this.transform.position;
+    //     while (isGhostValidGridPos())
+    //     {
+    //         ghostBlock.transform.position += new Vector3(0, -1, 0);
+    //     }
+    //     ghostBlock.transform.position += new Vector3(0, 1, 0);
+    // }
+
     public void moveDown()
     {
         transform.position += new Vector3(0, -1, 0);
@@ -136,6 +170,7 @@ public class Tetromino : MonoBehaviour
             enabled = false;
             Destroy(transform.GetChild(4).gameObject);
             transform.DetachChildren();
+            tag = "Untagged";
             Destroy(gameObject);
         }
     }

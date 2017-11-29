@@ -2215,6 +2215,15 @@ MonoBehaviour:
   m_GameIsOver: 0
   m_FadingScreen: {fileID: 0}
   m_EndRoundScreen: {fileID: 0}
+  ShowGhostBlocks: 1
+  ghostBlocks:
+  - {fileID: 1377132590222718, guid: a7da8dbc5b31246c3b087e953c0c7981, type: 2}
+  - {fileID: 1817593444745780, guid: 7c79ce9cb9c664abd8a2d7ca8d535075, type: 2}
+  - {fileID: 1591445311602354, guid: 79c0803a86916440da4547f6d8828fa4, type: 2}
+  - {fileID: 1930696356440202, guid: 7f8bd6ea25d0e403c826774eb29f27f3, type: 2}
+  - {fileID: 1426023608058090, guid: 0be3065f408014efeafe822ac99cb865, type: 2}
+  - {fileID: 1771496417251342, guid: 22ecbfc2030c943099222696d32d174f, type: 2}
+  - {fileID: 1843988375977560, guid: 33d65961180134489b03a0a26b665400, type: 2}
 --- !u!4 &1159976374
 Transform:
   m_ObjectHideFlags: 0
