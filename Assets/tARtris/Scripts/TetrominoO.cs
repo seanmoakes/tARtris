@@ -1,45 +1,28 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
 public class TetrominoO : Tetromino
 {
-    // Update is called once per frame
+    public void ClockWise()
+    {
+        PlayRotateClkAudio();
+    }
+
+    public void AntiClockWise()
+    {
+        PlayRotateAntiClkAudio();
+    }
+
     void Update()
     {
-        // setGhostTransform();
-        Vector2 axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
-        isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
-        isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);
-        isRightKeyHeld = Input.GetKey(KeyCode.RightArrow);
-
-        //Left or right movement
-        if (
-            (isLeftKeyHeld && !isRightKeyHeld || axes.x < -0.5f)
-            && Time.time - lastLeft >= 0.1)
+        UpdateMovement();
+        if (Input.GetKeyDown(KeyCode.B) || CrossPlatformInputManager.GetButtonDown("Clockwise"))
         {
-            moveLeft();
-            lastLeft = Time.time;
+            ClockWise();
         }
-        else if (
-            (isRightKeyHeld && !isLeftKeyHeld || axes.x > 0.5)
-            && Time.time - lastRight >= 0.1)
+        if (Input.GetKeyDown(KeyCode.V) || CrossPlatformInputManager.GetButtonDown("AntiClockwise"))
         {
-            moveRight();
-            lastRight = Time.time;
-        }
-
-        //Move down the screen
-        if ((isDownKeyHeld || axes.y < -0.5) && Time.time - lastFall >= 0.1)
-        {
-            moveDown();
-            lastFall = Time.time;
-        }
-        else if (Time.time - lastFall >= 1)
-        {
-            moveDown();
-            lastFall = Time.time;
-        }
+            AntiClockWise();
+        }      
     }
 }

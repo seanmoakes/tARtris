@@ -69,6 +69,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4411493449441348}
   - component: {fileID: 114454717216363482}
+  - component: {fileID: 82171205336732640}
   m_Layer: 0
   m_Name: L
   m_TagString: Untagged
@@ -357,6 +358,86 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1730155869495338}
   m_Mesh: {fileID: 4300000, guid: ec85bcbe05e0b424abdf6a9733854f52, type: 3}
+--- !u!82 &82171205336732640
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1622241478418146}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.198
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &114454717216363482
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -371,3 +452,13 @@ MonoBehaviour:
   currentRotation: 0
   desiredRotation: 0
   gameOver: 0
+  SpawnPosition: {x: 3, y: 20, z: 0}
+  moveLeftSound: {fileID: 8300000, guid: 105701706ce25244bbff870107230e3f, type: 3}
+  moveRightSound: {fileID: 8300000, guid: 529759022286baf40b6428aba1c332d4, type: 3}
+  moveErrorSound: {fileID: 8300000, guid: fe31b0704652fb247a64f27a950d2157, type: 3}
+  rotateClockwiseSound: {fileID: 8300000, guid: 71117cd83827014478515b09804d1b66,
+    type: 3}
+  rotateAntiClockwiseSound: {fileID: 8300000, guid: cb1f485e451d3ca4086067ad0f438de5,
+    type: 3}
+  rotateErrorSound: {fileID: 8300000, guid: 652359f1a751a3e46ae900bf089fc24b, type: 3}
+  landSound: {fileID: 8300000, guid: 1f97edd73a127e946b3cb65775544003, type: 3}
