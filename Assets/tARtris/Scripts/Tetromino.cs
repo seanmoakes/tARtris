@@ -1,6 +1,7 @@
-﻿// using System.Collections;
-// using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public enum RotateState
 {           /// Names for the 4 possible rotations of a tetromino.
@@ -12,78 +13,178 @@ public enum RotateState
 
 public class Tetromino : MonoBehaviour
 {
-    protected float lastFall = 0;
-    protected float lastLeft = 0;
-    protected float lastRight = 0;
+    /* Input variables */
     protected bool isDownKeyHeld = false;
     protected bool isLeftKeyHeld = false;
     protected bool isRightKeyHeld = false;
+    bool hardDrop = false;
+    protected Vector2 axes = new Vector2(0.0f, 0.0f);
+
+    /* Current and desired states used in checking for viable position after a rotation
+     * and to employ SRS style rotation for wall kicks etc */
     public RotateState currentRotation = RotateState.Zero;
     public RotateState desiredRotation = RotateState.Zero;
-    public bool gameOver = false;
-    public bool isValidGridPos()
-    {
-        foreach (Transform child in transform)
-        {
-            if (child != transform.GetChild(4))
-            {
-                Vector2 v = TetrisGrid.roundVec2(child.position);
-                if (!TetrisGrid.insideBorder(v))
-                {
-                    return false;
-                }
 
-                if (TetrisGrid.grid[(int)v.x, (int)v.y] != null &&
-                   TetrisGrid.grid[(int)v.x, (int)v.y].parent != transform)
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
+    /* Audio clips for the different moves, and a source for playing them
+     * Source is destroyed 1s after block is locked in place */
+    public bool gameOver = false;
+    public Vector3 SpawnPosition;
+    public AudioClip moveLeftSound;
+    public AudioClip moveRightSound;
+    public AudioClip rotateClockwiseSound;
+    public AudioClip rotateAntiClockwiseSound;
+    public AudioClip landSound;
+    private AudioSource audioSource;
+
+    /* Movement variables */
+    private float lateralDelay;
+    private float LeftDelay;
+    private float rightDelay;
+    private float lDelayRemaining;
+    private float rDelayRemaining;
+    private float leftHeldTime = 0.0f;
+    private float rightHeldTime = 0.0f;
+    private float lateralSpeed = 0.05f;
+    private float dropInterval;
+    private float dropDelta = 0.0f;
+    private float softDropInterval;
+    bool leftRepeat = false;
+    bool rightRepeat = false;
+
+    public void Start()
+    {
+        transform.position = SpawnPosition;
+        audioSource = GetComponent<AudioSource>();
+        dropInterval = FindObjectOfType<Tartris>().GetDropSpeed();
+        softDropInterval = dropInterval / 20.0f;
+        lateralDelay = FindObjectOfType<Tartris>().horizontalDelay;
+        rightDelay = lateralDelay;
+        LeftDelay = lateralDelay;
     }
 
-    public void updateGrid()
+    /*****************/
+    /* Movement Loop */
+    /*****************/
+    protected void UpdateMovement()
     {
-        for (int y = 0; y < TetrisGrid.h; y++)
+        UpdateMovementInputs();
+
+        UpdateLateralMovement();
+
+        UpdateVerticalMovement();
+    }
+    private void UpdateLateralMovement()
+    {
+        if (isLeftKeyHeld && isRightKeyHeld)
         {
-            for (int x = 0; x < TetrisGrid.w; x++)
+
+        }
+        else if (isLeftKeyHeld || axes.x < -0.5)
+        {
+            rightHeldTime = 0.0f;
+            rightDelay = lateralDelay;
+            rightRepeat = true;
+            if (!leftRepeat)
             {
-                if (TetrisGrid.grid[x, y] != null)
+                moveLeft();
+                leftRepeat = true;
+            }
+            else
+            {
+                if (LeftDelay > 0)
                 {
-                    if (TetrisGrid.grid[x, y].parent == transform)
+                    LeftDelay -= Time.deltaTime;
+                }
+                else
+                {
+                    leftHeldTime += Time.deltaTime;
+                    if (leftHeldTime >= lateralSpeed)
                     {
-                        TetrisGrid.grid[x, y] = null;
+                        moveLeft();
+                        leftHeldTime -= lateralSpeed;
                     }
                 }
             }
         }
-        foreach (Transform child in transform)
+        else if (isRightKeyHeld || axes.x > 0.5)
         {
-            if (child != transform.GetChild(4))
+            leftHeldTime = 0.0f;
+            LeftDelay = lateralDelay;
+            leftRepeat = false;
+            if (!rightRepeat)
             {
-                Vector2 v = TetrisGrid.roundVec2(child.position);
-                TetrisGrid.grid[(int)v.x, (int)v.y] = child;
+                moveRight();
+                rightRepeat = true;
+            }
+            else
+            {
+                if (rightDelay > 0)
+                {
+                    rightDelay -= Time.deltaTime;
+                }
+                else
+                {
+                    rightHeldTime += Time.deltaTime;
+                    if (rightHeldTime >= lateralSpeed)
+                    {
+                        moveRight();
+                        rightHeldTime -= lateralSpeed;
+                    }
+                }
             }
         }
-    }
-    // Use this for initialization
-    public void Start()
-    {
-        if (!isValidGridPos())
+        else
         {
-            Debug.Log("Game Over");
-            TARtrisManager.GameOver(true);
-            //Destroy(gameObject);
+            leftHeldTime = 0;
+            LeftDelay = lateralDelay;
+            leftRepeat = false;
+            rightHeldTime = 0;
+            rightDelay = lateralDelay;
+            rightRepeat = false;
+        }
+    }
+    private void UpdateVerticalMovement()
+    {
+//         if (Input.GetKeyDown(KeyCode.D))
+//             hardDrop = true;
+        if(!hardDrop)
+        {
+            float dropSpeed = isDownKeyHeld || axes.y < -0.5 ? softDropInterval : dropInterval;
+            
+            dropDelta += Time.deltaTime;
+            if (dropDelta >= dropSpeed)
+            {
+                moveDown();
+                dropDelta -= dropSpeed;
+            }
+        }
+        else
+        {
+            moveDown();
+            moveDown();
+        }
+    }
+    private void UpdateMovementInputs()
+    {
+        axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
+        isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
+        isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);
+        isRightKeyHeld = Input.GetKey(KeyCode.RightArrow);
+        if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.DownArrow))
+        {
+            ResetDownVariables();
         }
     }
 
+    /******************/
+    /* Movement Tests */
+    /******************/
     public bool TestPosition(int x, int y)
     {
         transform.position += new Vector3(x, y, 0);
-        if (isValidGridPos())
+        if (CheckIsValidPosition())
         {
-            updateGrid();
+            FindObjectOfType<Tartris>().UpdateGrid(this);
             return true;
         }
         transform.position -= new Vector3(x, y, 0);
@@ -113,57 +214,114 @@ public class Tetromino : MonoBehaviour
         }
         return false;
     }
-
-    // Update is called once per frame
-    void Update()
+    bool CheckIsValidPosition()
     {
+        foreach (Transform mino in transform)
+        {
+            if (mino != transform.GetChild(4))
+            {
+                Vector2 pos = FindObjectOfType<Tartris>().roundVec2(mino.position);
+                if (FindObjectOfType<Tartris>().CheckIsInsideGrid(pos) == false)
+                {
+                    return false;
+                }
+
+                if (FindObjectOfType<Tartris>().GetTransformAtGridPosition(pos) != null && FindObjectOfType<Tartris>().GetTransformAtGridPosition(pos).parent != transform)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
+    /**********************/
+    /* Movement Utilities */
+    /**********************/
+    public void ResetDownVariables()
+    {
+        dropDelta = 0.0f;
+    }
     public void moveDown()
     {
         transform.position += new Vector3(0, -1, 0);
 
-        if (isValidGridPos())
+        if (CheckIsValidPosition())
         {
-            updateGrid();
+            FindObjectOfType<Tartris>().UpdateGrid(this);
         }
         else
         {
-            transform.position += new Vector3(0, 1, 0);
-            TetrisGrid.deleteFullRows();
+            PlayLandAudio();
+            Destroy(audioSource, 1f);
 
-            FindObjectOfType<Spawner>().spawnNext();
-            enabled = false;
+            transform.position += new Vector3(0, 1, 0);
+
             Destroy(transform.GetChild(4).gameObject);
-            transform.DetachChildren();
-            Destroy(gameObject);
+
+            FindObjectOfType<Tartris>().DeleteRow();
+
+            if (FindObjectOfType<Tartris>().CheckIsAboveGrid(this))
+            {
+                FindObjectOfType<Tartris>().GameOver();
+            }
+
+            enabled = false;
+            hardDrop = false;
+            FindObjectOfType<Tartris>().SpawnNextTARtrimino();
         }
     }
     public void moveLeft()
     {
         transform.position += new Vector3(-1, 0, 0);
 
-        if (isValidGridPos())
+        if (CheckIsValidPosition())
         {
-            updateGrid();
+            FindObjectOfType<Tartris>().UpdateGrid(this);
+            PlayMoveLeftAudio();
         }
         else
         {
             transform.position += new Vector3(1, 0, 0);
         }
     }
-
     public void moveRight()
     {
         transform.position += new Vector3(1, 0, 0);
 
-        if (isValidGridPos())
+        if (CheckIsValidPosition())
         {
-            updateGrid();
+            FindObjectOfType<Tartris>().UpdateGrid(this);
+            PlayMoveRightAudio();
         }
         else
         {
             transform.position += new Vector3(-1, 0, 0);
         }
     }
+
+    /*****************/
+    /* Audio Methods */
+    /*****************/
+    public void PlayMoveLeftAudio()
+    {
+        audioSource.PlayOneShot(moveLeftSound);
+    }
+    public void PlayMoveRightAudio()
+    {
+        audioSource.PlayOneShot(moveRightSound);
+    }
+    public void PlayRotateClkAudio()
+    {
+        audioSource.PlayOneShot(rotateClockwiseSound);
+    }
+    public void PlayRotateAntiClkAudio()
+    {
+        audioSource.PlayOneShot(rotateAntiClockwiseSound);
+    }
+    public void PlayLandAudio()
+    {
+        audioSource.PlayOneShot(landSound);
+    }
 }
+
