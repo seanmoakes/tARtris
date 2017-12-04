@@ -11,6 +11,12 @@ public class MenuSystem : MonoBehaviour
         SceneManager.LoadScene("tARtrisScene");
 
         //Testing with other scene
-//      SceneManager.LoadScene("tetris3d");
+        //      SceneManager.LoadScene("tetris3d");
+    }
+
+    public void ReturnToMenu()
+    {
+        Destroy(GameObject.FindGameObjectWithTag("ARRoot"));
+        SceneManager.LoadScene("GameMenu");
     }
 }
