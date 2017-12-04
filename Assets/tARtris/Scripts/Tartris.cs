@@ -11,27 +11,27 @@ using System.Linq;
 /// </summary>
 enum ScoreType
 {
-    Single          = 0,
-    Double          = 1,
-    Triple          = 2,
-    tARtris         = 3,
-    mTSpin          = 4,
-    mTSpinSingle    = 5,
-    TSpin           = 6,
-    TSpinSingle     = 7,
-    TSpinDouble     = 8,
-    TSpinTriple     = 9,
-    NoScore         = 10
+    Single = 0,
+    Double = 1,
+    Triple = 2,
+    tARtris = 3,
+    mTSpin = 4,
+    mTSpinSingle = 5,
+    TSpin = 6,
+    TSpinSingle = 7,
+    TSpinDouble = 8,
+    TSpinTriple = 9,
+    NoScore = 10
 }
-
+/* */
 /// <summary>
 /// The types of moves that are possible
 /// </summary>
 enum MoveType
 {
-    Normal          = 0,
-    MiniTSpin       = 1,
-    TSpin           = 2
+    Normal = 0,
+    MiniTSpin = 1,
+    TSpin = 2
 }
 
 /// <summary>
@@ -64,13 +64,22 @@ public class Tartris : MonoBehaviour
     private ScoreType scoreThisTurn = ScoreType.NoScore;
     private MoveType moveThisTurn = MoveType.Normal;
     public Text HUDScore;
-    private int currentScore = 0;
+    public Text HUDLines;
+    public Text HUDLevel;
 
-    public int startingLevel;
-    //public float startingSpeed;
+    [Space]
+    [Header("Starting Values")]
+    private int currentScore = 0;
+    private int linesCleared = 0;
+    public static int startingLevel;
+    public float horizontalDelay = 0.3f;
+
+    [Space]
+    [Header("In Game Values")]
+    [SerializeField]
+    private int currentLevel;
     [SerializeField]
     private float DropSpeed;
-    public float horizontalDelay;
 
     private GameObject previewTartriminoGO;
     private GameObject tartriminoGO;
@@ -78,6 +87,7 @@ public class Tartris : MonoBehaviour
     private Vector3 previewTartriminoPosition = new Vector3(14f, 15f);
 
     private bool gameStarted = false;
+    private bool updateUINeeded = false;
 
     /// tartrimino variables
     List<int> tartriminoIndices;
@@ -90,30 +100,37 @@ public class Tartris : MonoBehaviour
     {
         Application.targetFrameRate = 60;
     }
-    private float GetFallSpeed(int level)
+    private float GetFallSpeed()
     {
-        return Mathf.Pow((0.8f - (((float)level - 1f) * 0.007f)), (float)level - 1f);
+        return Mathf.Pow((0.8f - (((float)currentLevel - 1f) * 0.007f)), (float)currentLevel - 1f);
     }
     private void Start()
     {
+        // Difficulty - level based on selection in menu, and drop speed based on level
+        currentLevel = (int)Mathf.Clamp((float)startingLevel, 1f, 15f);
+        DropSpeed = GetFallSpeed();
+
+        // Initialize Tartriminos and populate the queue
         props = new MaterialPropertyBlock();
-        startingLevel = (int)Mathf.Clamp((float)startingLevel, 1f, 15f);
         tartriminoIndices = new List<int>(Enumerable.Range(0, noTartriminos));
         FillQueue();
         FillQueue();
+
+        // Spawn the first tartrimino
         SpawnNextTARtrimino();
-        DropSpeed = GetFallSpeed (startingLevel);
     }
     public void Update()
     {
         UpdateScore();
+        UpdateLinesCleared();
+        UpdateLevel();
+        UpdateUI();
+        ResetPerTurnVariables();
         if (CrossPlatformInputManager.GetButtonDown("ResetBtn"))
         {
             Reset();
         }
     }
-
-    public float GetDropSpeed() { return DropSpeed; }
 
     public void UpdateScore()
     {
@@ -122,10 +139,12 @@ public class Tartris : MonoBehaviour
             case 0:
                 if (moveThisTurn == MoveType.TSpin)
                 {
+                    updateUINeeded = true;
                     scoreThisTurn = ScoreType.TSpin;
                 }
                 else if (moveThisTurn == MoveType.MiniTSpin)
                 {
+                    updateUINeeded = true;
                     scoreThisTurn = ScoreType.mTSpin;
                 }
                 else
@@ -134,6 +153,7 @@ public class Tartris : MonoBehaviour
                 }
                 break;
             case 1:
+                updateUINeeded = true;
                 if (moveThisTurn == MoveType.TSpin)
                 {
                     scoreThisTurn = ScoreType.TSpinSingle;
@@ -147,7 +167,9 @@ public class Tartris : MonoBehaviour
                     scoreThisTurn = ScoreType.Single;
                 }
                 break;
+
             case 2:
+                updateUINeeded = true;
                 if (moveThisTurn == MoveType.TSpin)
                 {
                     scoreThisTurn = ScoreType.TSpinDouble;
@@ -158,6 +180,7 @@ public class Tartris : MonoBehaviour
                 }
                 break;
             case 3:
+                updateUINeeded = true;
                 if (moveThisTurn == MoveType.TSpin)
                 {
                     scoreThisTurn = ScoreType.TSpinTriple;
@@ -177,10 +200,74 @@ public class Tartris : MonoBehaviour
                 break;
         }
         currentScore += score[(int)scoreThisTurn];
+    }
+
+
+    public void UpdateLinesCleared()
+    {
+        switch (scoreThisTurn)
+        {
+            case ScoreType.Single:
+                linesCleared++;
+                break;
+            case ScoreType.mTSpinSingle:
+                linesCleared += 2;
+                break;
+            case ScoreType.Double:
+                linesCleared += 3;
+                break;
+            case ScoreType.TSpin:
+                linesCleared += 4;
+                break;
+            case ScoreType.Triple:
+                linesCleared += 5;
+                break;
+            case ScoreType.tARtris:
+            case ScoreType.TSpinSingle:
+                linesCleared += 8;
+                break;
+            case ScoreType.TSpinDouble:
+                linesCleared += 12;
+                break;
+            case ScoreType.TSpinTriple:
+                linesCleared += 16;
+                break;
+            case ScoreType.mTSpin:
+            case ScoreType.NoScore:
+                break;
+        }
+    }
+    public void UpdateLevel()
+    {
+        var temp = currentLevel;
+        currentLevel = (int)Mathf.Max((float)startingLevel, (float)(linesCleared / 10));
+        if (temp != currentLevel)
+        {
+            UpdateSpeed();
+        }
+    }
+    public void UpdateUI()
+    {
         HUDScore.text = currentScore.ToString();
+        HUDLevel.text = currentLevel.ToString();
+        HUDLines.text = linesCleared.ToString();
+    }
+
+    public void UpdateSpeed()
+    {
+        DropSpeed = GetFallSpeed();
+    }
+    public void ResetPerTurnVariables()
+    {
         scoreThisTurn = ScoreType.NoScore;
         moveThisTurn = MoveType.Normal;
         noRowsThisTurn = 0;
+        updateUINeeded = false;
+    }
+
+    public float GetDropSpeed()
+    {
+        return DropSpeed;
     }
 
     public bool CheckIsAboveGrid(Tetromino tetro)
@@ -310,7 +397,7 @@ public class Tartris : MonoBehaviour
         }
         // The first time we need to instatiate both the active tartrimino and the preview one;
         // After that we only need to assign the preview Tartrimino to be active and then replace it
-        if (!gameStarted)   
+        if (!gameStarted)
         {
             gameStarted = true;
 
@@ -341,7 +428,7 @@ public class Tartris : MonoBehaviour
         {
             mr.SetPropertyBlock(props);
         }
-        
+
         return retTartrimino;
     }
 
@@ -356,21 +443,6 @@ public class Tartris : MonoBehaviour
     }
 
     public Text m_MessageText;                // Reference to the overlay Text to display winning text, etc.
-
-//     [HideInInspector]
-//     public bool m_GameIsOver = false;
-// 
-//     private int m_Level;                    // Which level the game is currently on.
-//  
-//     static public void GameOver(bool isOver)
-//     {
-//        m_GameIsOver = isOver;
-//     }
-// 
-//     static public bool IsGameOver()
-//     {
-//         return s_Instance.m_GameIsOver;
-//     }
 
     private void CheckQueue()
     {
