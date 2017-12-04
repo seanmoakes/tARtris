@@ -70,8 +70,9 @@ public class Tartris : MonoBehaviour
     [Space]
     [Header("Starting Values")]
     private int currentScore = 0;
+    private int startingHighScore;
     private int linesCleared = 0;
-    public static int startingLevel;
+    public static int startingLevel = 1;
     public float horizontalDelay = 0.3f;
 
     [Space]
@@ -110,6 +111,9 @@ public class Tartris : MonoBehaviour
         currentLevel = (int)Mathf.Clamp((float)startingLevel, 1f, 15f);
         DropSpeed = GetFallSpeed();
 
+        // Get high score from player prefs
+        startingHighScore = PlayerPrefs.GetInt("HighScore");
+
         // Initialize Tartriminos and populate the queue
         props = new MaterialPropertyBlock();
         tartriminoIndices = new List<int>(Enumerable.Range(0, noTartriminos));
@@ -122,6 +126,7 @@ public class Tartris : MonoBehaviour
     public void Update()
     {
         UpdateScore();
+        UpdateHighScore();
         UpdateLinesCleared();
         UpdateLevel();
         UpdateUI();
@@ -202,6 +207,13 @@ public class Tartris : MonoBehaviour
         currentScore += score[(int)scoreThisTurn];
     }
 
+    public void UpdateHighScore()
+    {
+        if (currentScore > startingHighScore)
+        {
+            PlayerPrefs.SetInt("HighScore", currentScore);
+        }
+    }
 
     public void UpdateLinesCleared()
     {
