@@ -71,7 +71,7 @@ public class Tartris : MonoBehaviour
     [Header("Starting Values")]
     private int currentScore = 0;
     private int linesCleared = 0;
-    public int startingLevel = 1;
+    public static int startingLevel;
     public float horizontalDelay = 0.3f;
 
     [Space]
@@ -106,13 +106,18 @@ public class Tartris : MonoBehaviour
     }
     private void Start()
     {
+        // Difficulty - level based on selection in menu, and drop speed based on level
+        currentLevel = (int)Mathf.Clamp((float)startingLevel, 1f, 15f);
+        DropSpeed = GetFallSpeed();
+
+        // Initialize Tartriminos and populate the queue
         props = new MaterialPropertyBlock();
-        startingLevel = (int)Mathf.Clamp((float)startingLevel, 1f, 15f);
         tartriminoIndices = new List<int>(Enumerable.Range(0, noTartriminos));
         FillQueue();
         FillQueue();
+
+        // Spawn the first tartrimino
         SpawnNextTARtrimino();
-        DropSpeed = GetFallSpeed();
     }
     public void Update()
     {

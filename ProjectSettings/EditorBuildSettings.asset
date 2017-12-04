@@ -6,17 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/tARtris/Scenes/GameMenu.unity
+    guid: 0a88d8f4546764b5ebb419574047e3d3
+  - enabled: 1
     path: Assets/tARtris/Scenes/tARtrisSetupScene.unity
     guid: 13547735eb09c4fe7865cebbcbedf9f2
   - enabled: 1
     path: Assets/tARtris/Scenes/tARtrisScene.unity
     guid: 16fa4f8bfba9e3a429be7b63faf6e364
-  - enabled: 0
-    path: Assets/tARtris/Scenes/tetris3d.unity
-    guid: fb87bc54c9f1347cfa9842ddbc8fa527
   - enabled: 1
     path: Assets/tARtris/Scenes/GameOver.unity
     guid: 56fe682e6220c2c449513f0bfa9e1d95
+  - enabled: 0
+    path: Assets/tARtris/Scenes/tetris3d.unity
+    guid: fb87bc54c9f1347cfa9842ddbc8fa527
   - enabled: 0
     path: Assets/UnityARInterface/Examples/MatchScale/MatchScale.unity
     guid: e618ebb9861db9349a964dc4dab17402
