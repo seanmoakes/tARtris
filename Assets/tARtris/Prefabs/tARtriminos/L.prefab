@@ -413,7 +413,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -425,7 +425,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -437,7 +437,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!114 &114454717216363482
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -455,10 +455,8 @@ MonoBehaviour:
   SpawnPosition: {x: 3, y: 20, z: 0}
   moveLeftSound: {fileID: 8300000, guid: 105701706ce25244bbff870107230e3f, type: 3}
   moveRightSound: {fileID: 8300000, guid: 529759022286baf40b6428aba1c332d4, type: 3}
-  moveErrorSound: {fileID: 8300000, guid: fe31b0704652fb247a64f27a950d2157, type: 3}
   rotateClockwiseSound: {fileID: 8300000, guid: 71117cd83827014478515b09804d1b66,
     type: 3}
   rotateAntiClockwiseSound: {fileID: 8300000, guid: cb1f485e451d3ca4086067ad0f438de5,
     type: 3}
-  rotateErrorSound: {fileID: 8300000, guid: 652359f1a751a3e46ae900bf089fc24b, type: 3}
   landSound: {fileID: 8300000, guid: 1f97edd73a127e946b3cb65775544003, type: 3}
