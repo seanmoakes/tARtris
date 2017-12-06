@@ -8,11 +8,14 @@ using UnityEngine.UI;
 public class GameMenu : MonoBehaviour
 {
     public Text levelText;
+    public Text hiscoreText;
 
     // Use this for initialization
     void Start()
     {
         levelText.text = "1";
+
+        hiscoreText.text = PlayerPrefs.GetInt("HighScore").ToString();
     }
 
     public void PlayGame()
@@ -22,7 +25,7 @@ public class GameMenu : MonoBehaviour
 
     public void ChangedValue(float value)
     {
-		Tartris.startingLevel = (int)value;
+        Tartris.startingLevel = (int)value;
         levelText.text = value.ToString();
     }
 }
