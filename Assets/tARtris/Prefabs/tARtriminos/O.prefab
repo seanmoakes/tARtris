@@ -51,8 +51,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4428974612340138}
-  - component: {fileID: 114212507657326832}
   - component: {fileID: 82110600797596396}
+  - component: {fileID: 114046492068713158}
   m_Layer: 0
   m_Name: O
   m_TagString: Untagged
@@ -438,7 +438,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &114212507657326832
+--- !u!114 &114046492068713158
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -446,19 +446,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1322555272038546}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 259677ea157fd420793f739bcd3f0e0c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d6eefd1a95de4ea793c3da28e4862d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   currentRotation: 0
   desiredRotation: 0
+  rotationChecks: {fileID: 0}
   gameOver: 0
   SpawnPosition: {x: 4, y: 20, z: 0}
   moveLeftSound: {fileID: 8300000, guid: 105701706ce25244bbff870107230e3f, type: 3}
   moveRightSound: {fileID: 8300000, guid: 529759022286baf40b6428aba1c332d4, type: 3}
-  moveErrorSound: {fileID: 8300000, guid: fe31b0704652fb247a64f27a950d2157, type: 3}
   rotateClockwiseSound: {fileID: 8300000, guid: 71117cd83827014478515b09804d1b66,
     type: 3}
   rotateAntiClockwiseSound: {fileID: 8300000, guid: cb1f485e451d3ca4086067ad0f438de5,
     type: 3}
-  rotateErrorSound: {fileID: 8300000, guid: 652359f1a751a3e46ae900bf089fc24b, type: 3}
   landSound: {fileID: 8300000, guid: 1f97edd73a127e946b3cb65775544003, type: 3}

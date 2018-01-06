@@ -68,8 +68,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4411493449441348}
-  - component: {fileID: 114454717216363482}
   - component: {fileID: 82171205336732640}
+  - component: {fileID: 114920332730739336}
   m_Layer: 0
   m_Name: L
   m_TagString: Untagged
@@ -438,7 +438,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &114454717216363482
+--- !u!114 &114920332730739336
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -446,11 +446,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1622241478418146}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98788dccedb5b44028e8eba3140b4b34, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d6eefd1a95de4ea793c3da28e4862d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   currentRotation: 0
   desiredRotation: 0
+  rotationChecks: {fileID: 11400000, guid: 265b347cfa88a4110845e51acff21644, type: 2}
   gameOver: 0
   SpawnPosition: {x: 3, y: 20, z: 0}
   moveLeftSound: {fileID: 8300000, guid: 105701706ce25244bbff870107230e3f, type: 3}

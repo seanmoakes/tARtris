@@ -1,11 +1,17 @@
 fileFormatVersion: 2
 guid: a2cbd4f7e5e07154c8f7b637b0e37eae
-timeCreated: 1511804820
+timeCreated: 1515252886
 licenseType: Free
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - moveLeftSound: {instanceID: 0}
+  - moveRightSound: {instanceID: 0}
+  - rotateClockwiseSound: {instanceID: 0}
+  - rotateAntiClockwiseSound: {instanceID: 0}
+  - landSound: {instanceID: 0}
+  - rotationChecks: {fileID: 11400000, guid: 23186bdcbaf8840e398e06af655931ed, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
