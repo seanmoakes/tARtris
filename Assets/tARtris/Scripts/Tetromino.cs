@@ -105,7 +105,7 @@ public class Tetromino : MonoBehaviour
             rightRepeat = true;
             if (!leftRepeat)
             {
-                moveLeft();
+                MoveLeft();
                 leftRepeat = true;
             }
             else
@@ -119,7 +119,7 @@ public class Tetromino : MonoBehaviour
                     leftHeldTime += Time.deltaTime;
                     if (leftHeldTime >= lateralSpeed)
                     {
-                        moveLeft();
+                        MoveLeft();
                         leftHeldTime -= lateralSpeed;
                     }
                 }
@@ -132,7 +132,7 @@ public class Tetromino : MonoBehaviour
             leftRepeat = false;
             if (!rightRepeat)
             {
-                moveRight();
+                MoveRight();
                 rightRepeat = true;
             }
             else
@@ -146,7 +146,7 @@ public class Tetromino : MonoBehaviour
                     rightHeldTime += Time.deltaTime;
                     if (rightHeldTime >= lateralSpeed)
                     {
-                        moveRight();
+                        MoveRight();
                         rightHeldTime -= lateralSpeed;
                     }
                 }
@@ -171,14 +171,14 @@ public class Tetromino : MonoBehaviour
             dropDelta += Time.deltaTime;
             if (dropDelta >= dropSpeed)
             {
-                moveDown();
+                MoveDown();
                 dropDelta -= dropSpeed;
             }
         }
         else
         {
-            moveDown();
-            moveDown();
+            MoveDown();
+            MoveDown();
         }
     }
     private void UpdateMovementInputs()
@@ -315,7 +315,7 @@ public class Tetromino : MonoBehaviour
         {
             if (mino != transform.GetChild(4))
             {
-                Vector2 pos = FindObjectOfType<Tartris>().roundVec2(mino.position);
+                Vector2 pos = FindObjectOfType<Tartris>().RoundVec2(mino.position);
                 if (FindObjectOfType<Tartris>().CheckIsInsideGrid(pos) == false)
                 {
                     return false;
@@ -337,7 +337,7 @@ public class Tetromino : MonoBehaviour
     {
         dropDelta = 0.0f;
     }
-    public void moveDown()
+    public void MoveDown()
     {
         transform.position += new Vector3(0, -1, 0);
 
@@ -366,7 +366,7 @@ public class Tetromino : MonoBehaviour
             FindObjectOfType<Tartris>().SpawnNextTARtrimino();
         }
     }
-    public void moveLeft()
+    public void MoveLeft()
     {
         transform.position += new Vector3(-1, 0, 0);
 
@@ -380,7 +380,7 @@ public class Tetromino : MonoBehaviour
             transform.position += new Vector3(1, 0, 0);
         }
     }
-    public void moveRight()
+    public void MoveRight()
     {
         transform.position += new Vector3(1, 0, 0);
 

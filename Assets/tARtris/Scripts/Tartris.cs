@@ -6,33 +6,8 @@ using System.Threading;
 using UnityStandardAssets.CrossPlatformInput;
 using System.Linq;
 
-/// <summary>
-/// An enum to represent the different score types that can be achieved in a single turn
-/// </summary>
-enum ScoreType
-{
-    Single = 0,
-    Double = 1,
-    Triple = 2,
-    tARtris = 3,
-    mTSpin = 4,
-    mTSpinSingle = 5,
-    TSpin = 6,
-    TSpinSingle = 7,
-    TSpinDouble = 8,
-    TSpinTriple = 9,
-    NoScore = 10
-}
-/* */
-/// <summary>
-/// The types of moves that are possible
-/// </summary>
-enum MoveType
-{
-    Normal = 0,
-    MiniTSpin = 1,
-    TSpin = 2
-}
+using static ScoreType;
+using static MoveType;
 
 /// <summary>
 /// The Tartris manager class
@@ -61,8 +36,8 @@ public class Tartris : MonoBehaviour
     };
     private int noRowsThisTurn = 0;
     private int noTartriminos = 7;
-    private ScoreType scoreThisTurn = ScoreType.NoScore;
-    private MoveType moveThisTurn = MoveType.Normal;
+    private ScoreType scoreThisTurn = NoScore;
+    private MoveType moveThisTurn = Normal;
     public Text HUDScore;
     public Text HUDLines;
     public Text HUDLevel;
@@ -142,66 +117,66 @@ public class Tartris : MonoBehaviour
         switch (noRowsThisTurn)
         {
             case 0:
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
                     updateUINeeded = true;
-                    scoreThisTurn = ScoreType.TSpin;
+                    scoreThisTurn = TSpinNoLineClear;
                 }
-                else if (moveThisTurn == MoveType.MiniTSpin)
+                else if (moveThisTurn == MiniTSpin)
                 {
                     updateUINeeded = true;
-                    scoreThisTurn = ScoreType.mTSpin;
+                    scoreThisTurn = MiniTSpinNoLineClear;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.NoScore;
+                    scoreThisTurn = NoScore;
                 }
                 break;
             case 1:
                 updateUINeeded = true;
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
-                    scoreThisTurn = ScoreType.TSpinSingle;
+                    scoreThisTurn = TSpinSingle;
                 }
-                else if (moveThisTurn == MoveType.MiniTSpin)
+                else if (moveThisTurn == MiniTSpin)
                 {
-                    scoreThisTurn = ScoreType.mTSpinSingle;
+                    scoreThisTurn = MiniTSpinSingle;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.Single;
+                    scoreThisTurn = Single;
                 }
                 break;
 
             case 2:
                 updateUINeeded = true;
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
-                    scoreThisTurn = ScoreType.TSpinDouble;
+                    scoreThisTurn = TSpinDouble;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.Double;
+                    scoreThisTurn = Double;
                 }
                 break;
             case 3:
                 updateUINeeded = true;
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
-                    scoreThisTurn = ScoreType.TSpinTriple;
+                    scoreThisTurn = TSpinTriple;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.Triple;
+                    scoreThisTurn = Triple;
                 }
                 break;
             case 4:
                 {
-                    scoreThisTurn = ScoreType.tARtris;
+                    scoreThisTurn = tARtris;
                 }
                 break;
             default:
-                scoreThisTurn = ScoreType.NoScore;
+                scoreThisTurn = NoScore;
                 break;
         }
         currentScore += score[(int)scoreThisTurn];
@@ -219,33 +194,33 @@ public class Tartris : MonoBehaviour
     {
         switch (scoreThisTurn)
         {
-            case ScoreType.Single:
+            case Single:
                 linesCleared++;
                 break;
-            case ScoreType.mTSpinSingle:
+            case MiniTSpinSingle:
                 linesCleared += 2;
                 break;
-            case ScoreType.Double:
+            case Double:
                 linesCleared += 3;
                 break;
-            case ScoreType.TSpin:
+            case TSpinNoLineClear:
                 linesCleared += 4;
                 break;
-            case ScoreType.Triple:
+            case Triple:
                 linesCleared += 5;
                 break;
-            case ScoreType.tARtris:
-            case ScoreType.TSpinSingle:
+            case tARtris:
+            case TSpinSingle:
                 linesCleared += 8;
                 break;
-            case ScoreType.TSpinDouble:
+            case TSpinDouble:
                 linesCleared += 12;
                 break;
-            case ScoreType.TSpinTriple:
+            case TSpinTriple:
                 linesCleared += 16;
                 break;
-            case ScoreType.mTSpin:
-            case ScoreType.NoScore:
+            case MiniTSpinNoLineClear:
+            case NoScore:
                 break;
         }
     }
@@ -271,8 +246,8 @@ public class Tartris : MonoBehaviour
     }
     public void ResetPerTurnVariables()
     {
-        scoreThisTurn = ScoreType.NoScore;
-        moveThisTurn = MoveType.Normal;
+        scoreThisTurn = NoScore;
+        moveThisTurn = Normal;
         noRowsThisTurn = 0;
         updateUINeeded = false;
     }
@@ -288,7 +263,7 @@ public class Tartris : MonoBehaviour
         {
             foreach (Transform mino in tetro.transform)
             {
-                Vector2 pos = roundVec2(mino.position);
+                Vector2 pos = RoundVec2(mino.position);
                 if (pos.y > m_GridHeight - 1)
                 {
                     return true;
@@ -374,7 +349,7 @@ public class Tartris : MonoBehaviour
         {
             if (mino != tet.transform.GetChild(4))
             {
-                Vector2 pos = roundVec2(mino.position);
+                Vector2 pos = RoundVec2(mino.position);
                 if (pos.y < m_GridHeight)
                 {
                     grid[(int)pos.x, (int)pos.y] = mino;
@@ -449,7 +424,7 @@ public class Tartris : MonoBehaviour
         return (int)pos.x >= 0 && (int)pos.x < m_GridWidth && (int)pos.y >= 0;
     }
 
-    public Vector2 roundVec2(Vector2 v)
+    public Vector2 RoundVec2(Vector2 v)
     {
         return new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
     }
