@@ -38,6 +38,8 @@ public class Tetromino : MonoBehaviour
     public AudioClip landSound;
     private AudioSource audioSource;
 
+    public int Children = 0;
+
     /* Movement variables */
     private float lateralDelay;
     private float LeftDelay;
@@ -49,26 +51,35 @@ public class Tetromino : MonoBehaviour
     private float lateralSpeed = 0.05f;
     private float dropInterval;
     private float dropDelta = 0.0f;
+    private float lastDrop = 0.0f;
     private float softDropInterval;
     bool leftRepeat = false;
     bool rightRepeat = false;
 
+    private Tartris tartrisRef;
+
     public void Start()
     {
+        tartrisRef = FindObjectOfType<Tartris>();
         transform.position = SpawnPosition;
         audioSource = GetComponent<AudioSource>();
-        dropInterval = FindObjectOfType<Tartris>().GetDropSpeed();
+        dropInterval = tartrisRef.GetDropSpeed();
         softDropInterval = dropInterval / 20.0f;
-        lateralDelay = FindObjectOfType<Tartris>().horizontalDelay;
+        lateralDelay = tartrisRef.horizontalDelay;
         rightDelay = lateralDelay;
         LeftDelay = lateralDelay;
+        
     }
 
     void Update()
     {
         UpdateMovement();
         UpdateRotation();
-
+        Children = gameObject.transform.childCount;
+        if (gameObject.transform.childCount == 0)
+        {
+            Destroy(gameObject);
+        }
     }
     private void UpdateRotation()
     {
@@ -154,33 +165,34 @@ public class Tetromino : MonoBehaviour
         }
         else
         {
-            leftHeldTime = 0;
+            leftHeldTime = 0.0f;
             LeftDelay = lateralDelay;
             leftRepeat = false;
-            rightHeldTime = 0;
+            rightHeldTime = 0.0f;
             rightDelay = lateralDelay;
             rightRepeat = false;
         }
     }
     private void UpdateVerticalMovement()
     {
-        if(!hardDrop)
+        if (isDownKeyHeld)
         {
-            float dropSpeed = isDownKeyHeld || axes.y < -0.5 ? softDropInterval : dropInterval;
-            
-            dropDelta += Time.deltaTime;
-            if (dropDelta >= dropSpeed)
+            if (Time.time - lastDrop >= softDropInterval)
             {
                 MoveDown();
-                dropDelta -= dropSpeed;
+                lastDrop = Time.time;
             }
         }
         else
         {
-            MoveDown();
-            MoveDown();
+            if (Time.time - lastDrop >= dropInterval)
+            {
+                MoveDown();
+                lastDrop = Time.time;
+            }
         }
     }
+
     private void UpdateMovementInputs()
     {
         axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
@@ -229,7 +241,7 @@ public class Tetromino : MonoBehaviour
             transform.RotateAround(pos, Vector3.forward, 90.0f);
             //PlayRotateErrorAudio();
         }
-        FindObjectOfType<Tartris>().UpdateGrid(this);
+        tartrisRef.UpdateGrid(this);
     }
 
     public void AntiClockWise()
@@ -265,7 +277,7 @@ public class Tetromino : MonoBehaviour
         {
             transform.RotateAround(pos, Vector3.forward, -90.0f);
         }
-        FindObjectOfType<Tartris>().UpdateGrid(this);
+        tartrisRef.UpdateGrid(this);
     }
 
     /******************/
@@ -276,7 +288,7 @@ public class Tetromino : MonoBehaviour
         transform.position += new Vector3(x, y, 0);
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
             return true;
         }
         transform.position -= new Vector3(x, y, 0);
@@ -315,13 +327,13 @@ public class Tetromino : MonoBehaviour
         {
             if (mino != transform.GetChild(4))
             {
-                Vector2 pos = FindObjectOfType<Tartris>().RoundVec2(mino.position);
-                if (FindObjectOfType<Tartris>().CheckIsInsideGrid(pos) == false)
+                Vector2 pos = tartrisRef.RoundVec2(mino.position);
+                if (tartrisRef.CheckIsInsideGrid(pos) == false)
                 {
                     return false;
                 }
 
-                if (FindObjectOfType<Tartris>().GetTransformAtGridPosition(pos) != null && FindObjectOfType<Tartris>().GetTransformAtGridPosition(pos).parent != transform)
+                if (tartrisRef.GetTransformAtGridPosition(pos) != null && tartrisRef.GetTransformAtGridPosition(pos).parent != transform)
                 {
                     return false;
                 }
@@ -343,27 +355,29 @@ public class Tetromino : MonoBehaviour
 
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
         }
         else
         {
+            tartrisRef.DisableCurrentGhost();
             PlayLandAudio();
             Destroy(audioSource, 1f);
 
             transform.position += new Vector3(0, 1, 0);
 
-            Destroy(transform.GetChild(4).gameObject);
-
-            FindObjectOfType<Tartris>().DeleteRow();
-
-            if (FindObjectOfType<Tartris>().CheckIsAboveGrid(this))
+            gameObject.tag = "landedTARtrimino";
+            if (tartrisRef.CheckIsAboveGrid(this))
             {
-                FindObjectOfType<Tartris>().GameOver();
+                tartrisRef.GameOver();
             }
+            Destroy(transform.GetChild(4).gameObject);
+            transform.DetachChildren();
+            tartrisRef.DeleteRow();
+
+
 
             enabled = false;
-            hardDrop = false;
-            FindObjectOfType<Tartris>().SpawnNextTARtrimino();
+            tartrisRef.SpawnNextTARtrimino();
         }
     }
     public void MoveLeft()
@@ -372,7 +386,7 @@ public class Tetromino : MonoBehaviour
 
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
             PlayMoveLeftAudio();
         }
         else
@@ -386,7 +400,7 @@ public class Tetromino : MonoBehaviour
 
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
             PlayMoveRightAudio();
         }
         else

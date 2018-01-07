@@ -59,6 +59,8 @@ public class Tartris : MonoBehaviour
 
     private GameObject previewTartriminoGO;
     private GameObject tartriminoGO;
+    private GameObject ghostTARtriminoGO;
+
     private Vector3 startingSpawnPosition = new Vector3(5f, 21f);
     private Vector3 previewTartriminoPosition = new Vector3(14f, 15f);
 
@@ -111,7 +113,6 @@ public class Tartris : MonoBehaviour
             Reset();
         }
     }
-
     public void UpdateScore()
     {
         switch (noRowsThisTurn)
@@ -181,7 +182,6 @@ public class Tartris : MonoBehaviour
         }
         currentScore += score[(int)scoreThisTurn];
     }
-
     public void UpdateHighScore()
     {
         if (currentScore > startingHighScore)
@@ -189,7 +189,6 @@ public class Tartris : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", currentScore);
         }
     }
-
     public void UpdateLinesCleared()
     {
         switch (scoreThisTurn)
@@ -239,7 +238,6 @@ public class Tartris : MonoBehaviour
         HUDLevel.text = currentLevel.ToString();
         HUDLines.text = linesCleared.ToString();
     }
-
     public void UpdateSpeed()
     {
         DropSpeed = GetFallSpeed();
@@ -251,12 +249,10 @@ public class Tartris : MonoBehaviour
         noRowsThisTurn = 0;
         updateUINeeded = false;
     }
-
     public float GetDropSpeed()
     {
         return DropSpeed;
     }
-
     public bool CheckIsAboveGrid(Tetromino tetro)
     {
         for (int x = 0; x < m_GridWidth; ++x)
@@ -272,7 +268,6 @@ public class Tartris : MonoBehaviour
         }
         return false;
     }
-
     public bool IsFullRowAt(int y)
     {
         for (int x = 0; x < m_GridWidth; ++x)
@@ -285,7 +280,6 @@ public class Tartris : MonoBehaviour
         ++noRowsThisTurn;
         return true;
     }
-
     public void DeleteMinoAt(int y)
     {
         for (int x = 0; x < m_GridWidth; x++)
@@ -294,7 +288,6 @@ public class Tartris : MonoBehaviour
             grid[x, y] = null;
         }
     }
-
     public void MoveRowDown(int y)
     {
         for (int x = 0; x < m_GridWidth; x++)
@@ -307,7 +300,6 @@ public class Tartris : MonoBehaviour
             }
         }
     }
-
     public void MoveAllRowsDown(int y)
     {
         for (int i = y; i < m_GridHeight; ++i)
@@ -315,7 +307,6 @@ public class Tartris : MonoBehaviour
             MoveRowDown(i);
         }
     }
-
     public void DeleteRow()
     {
         for (int y = 0; y < m_GridHeight; ++y)
@@ -328,7 +319,6 @@ public class Tartris : MonoBehaviour
             }
         }
     }
-
     public void UpdateGrid(Tetromino tet)
     {
         for (int y = 0; y < m_GridHeight; ++y)
@@ -390,20 +380,41 @@ public class Tartris : MonoBehaviour
 
             int i = GetRandomTartrimino();
             tartriminoGO = InstantiateTartrimino(i, startingSpawnPosition);
-
             i = GetRandomTartrimino();
             previewTartriminoGO = InstantiateTartrimino(i, previewTartriminoPosition);
             previewTartriminoGO.GetComponent<Tetromino>().enabled = false;
+            tartriminoGO.tag = "currentActiveTARtrimino";
+
+            SpawnGhostTARtrimino();
         }
         else
         {
             tartriminoGO = previewTartriminoGO;
             tartriminoGO.GetComponent<Tetromino>().enabled = true;
-
             int i = GetRandomTartrimino();
             previewTartriminoGO = InstantiateTartrimino(i, previewTartriminoPosition);
             previewTartriminoGO.GetComponent<Tetromino>().enabled = false;
+            tartriminoGO.tag = "currentActiveTARtrimino";
+
+            SpawnGhostTARtrimino();
+
         }
+    }
+
+    public void SpawnGhostTARtrimino()
+    {
+        Destroy(GameObject.FindGameObjectWithTag("currentGhostTARtrimino"));
+
+        ghostTARtriminoGO = (GameObject)Instantiate(tartriminoGO, tartriminoGO.transform.position, Quaternion.identity);
+
+        Destroy(ghostTARtriminoGO.GetComponent<Tetromino>());
+
+        ghostTARtriminoGO.AddComponent<GhostTARtrimino>();
+    }
+
+    public void DisableCurrentGhost()
+    {
+        ghostTARtriminoGO.GetComponent<GhostTARtrimino>().enabled = false;
     }
 
     public GameObject InstantiateTartrimino(int tartriminoIndex, Vector3 tartriminoPosition)
