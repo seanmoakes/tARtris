@@ -6,33 +6,8 @@ using System.Threading;
 using UnityStandardAssets.CrossPlatformInput;
 using System.Linq;
 
-/// <summary>
-/// An enum to represent the different score types that can be achieved in a single turn
-/// </summary>
-enum ScoreType
-{
-    Single = 0,
-    Double = 1,
-    Triple = 2,
-    tARtris = 3,
-    mTSpin = 4,
-    mTSpinSingle = 5,
-    TSpin = 6,
-    TSpinSingle = 7,
-    TSpinDouble = 8,
-    TSpinTriple = 9,
-    NoScore = 10
-}
-/* */
-/// <summary>
-/// The types of moves that are possible
-/// </summary>
-enum MoveType
-{
-    Normal = 0,
-    MiniTSpin = 1,
-    TSpin = 2
-}
+using static ScoreType;
+using static MoveType;
 
 /// <summary>
 /// The Tartris manager class
@@ -61,8 +36,8 @@ public class Tartris : MonoBehaviour
     };
     private int noRowsThisTurn = 0;
     private int noTartriminos = 7;
-    private ScoreType scoreThisTurn = ScoreType.NoScore;
-    private MoveType moveThisTurn = MoveType.Normal;
+    private ScoreType scoreThisTurn = NoScore;
+    private MoveType moveThisTurn = Normal;
     public Text HUDScore;
     public Text HUDLines;
     public Text HUDLevel;
@@ -84,10 +59,13 @@ public class Tartris : MonoBehaviour
 
     private GameObject previewTartriminoGO;
     private GameObject tartriminoGO;
+    private GameObject ghostTARtriminoGO;
+
     private Vector3 startingSpawnPosition = new Vector3(5f, 21f);
     private Vector3 previewTartriminoPosition = new Vector3(14f, 15f);
 
     private bool gameStarted = false;
+    public bool updateGhost = true;
     private bool updateUINeeded = false;
 
     /// tartrimino variables
@@ -95,7 +73,9 @@ public class Tartris : MonoBehaviour
     private Queue<int> nextTartriminos = new Queue<int>();
     public GameObject[] TARtriminos;
     public Color[] BlockColors;
+    public Material[] materials;
     private MaterialPropertyBlock props;
+    private int activeColour;
 
     private void Awake()
     {
@@ -136,77 +116,75 @@ public class Tartris : MonoBehaviour
             Reset();
         }
     }
-
     public void UpdateScore()
     {
         switch (noRowsThisTurn)
         {
             case 0:
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
                     updateUINeeded = true;
-                    scoreThisTurn = ScoreType.TSpin;
+                    scoreThisTurn = TSpinNoLineClear;
                 }
-                else if (moveThisTurn == MoveType.MiniTSpin)
+                else if (moveThisTurn == MiniTSpin)
                 {
                     updateUINeeded = true;
-                    scoreThisTurn = ScoreType.mTSpin;
+                    scoreThisTurn = MiniTSpinNoLineClear;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.NoScore;
+                    scoreThisTurn = NoScore;
                 }
                 break;
             case 1:
                 updateUINeeded = true;
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
-                    scoreThisTurn = ScoreType.TSpinSingle;
+                    scoreThisTurn = TSpinSingle;
                 }
-                else if (moveThisTurn == MoveType.MiniTSpin)
+                else if (moveThisTurn == MiniTSpin)
                 {
-                    scoreThisTurn = ScoreType.mTSpinSingle;
+                    scoreThisTurn = MiniTSpinSingle;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.Single;
+                    scoreThisTurn = Single;
                 }
                 break;
 
             case 2:
                 updateUINeeded = true;
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
-                    scoreThisTurn = ScoreType.TSpinDouble;
+                    scoreThisTurn = TSpinDouble;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.Double;
+                    scoreThisTurn = Double;
                 }
                 break;
             case 3:
                 updateUINeeded = true;
-                if (moveThisTurn == MoveType.TSpin)
+                if (moveThisTurn == TSpin)
                 {
-                    scoreThisTurn = ScoreType.TSpinTriple;
+                    scoreThisTurn = TSpinTriple;
                 }
                 else
                 {
-                    scoreThisTurn = ScoreType.Triple;
+                    scoreThisTurn = Triple;
                 }
                 break;
             case 4:
                 {
-                    scoreThisTurn = ScoreType.tARtris;
+                    scoreThisTurn = tARtris;
                 }
                 break;
             default:
-                scoreThisTurn = ScoreType.NoScore;
+                scoreThisTurn = NoScore;
                 break;
         }
         currentScore += score[(int)scoreThisTurn];
     }
-
     public void UpdateHighScore()
     {
         if (currentScore > startingHighScore)
@@ -214,38 +192,37 @@ public class Tartris : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", currentScore);
         }
     }
-
     public void UpdateLinesCleared()
     {
         switch (scoreThisTurn)
         {
-            case ScoreType.Single:
+            case Single:
                 linesCleared++;
                 break;
-            case ScoreType.mTSpinSingle:
+            case MiniTSpinSingle:
                 linesCleared += 2;
                 break;
-            case ScoreType.Double:
+            case Double:
                 linesCleared += 3;
                 break;
-            case ScoreType.TSpin:
+            case TSpinNoLineClear:
                 linesCleared += 4;
                 break;
-            case ScoreType.Triple:
+            case Triple:
                 linesCleared += 5;
                 break;
-            case ScoreType.tARtris:
-            case ScoreType.TSpinSingle:
+            case tARtris:
+            case TSpinSingle:
                 linesCleared += 8;
                 break;
-            case ScoreType.TSpinDouble:
+            case TSpinDouble:
                 linesCleared += 12;
                 break;
-            case ScoreType.TSpinTriple:
+            case TSpinTriple:
                 linesCleared += 16;
                 break;
-            case ScoreType.mTSpin:
-            case ScoreType.NoScore:
+            case MiniTSpinNoLineClear:
+            case NoScore:
                 break;
         }
     }
@@ -264,31 +241,28 @@ public class Tartris : MonoBehaviour
         HUDLevel.text = currentLevel.ToString();
         HUDLines.text = linesCleared.ToString();
     }
-
     public void UpdateSpeed()
     {
         DropSpeed = GetFallSpeed();
     }
     public void ResetPerTurnVariables()
     {
-        scoreThisTurn = ScoreType.NoScore;
-        moveThisTurn = MoveType.Normal;
+        scoreThisTurn = NoScore;
+        moveThisTurn = Normal;
         noRowsThisTurn = 0;
         updateUINeeded = false;
     }
-
     public float GetDropSpeed()
     {
         return DropSpeed;
     }
-
     public bool CheckIsAboveGrid(Tetromino tetro)
     {
         for (int x = 0; x < m_GridWidth; ++x)
         {
             foreach (Transform mino in tetro.transform)
             {
-                Vector2 pos = roundVec2(mino.position);
+                Vector2 pos = RoundVec2(mino.position);
                 if (pos.y > m_GridHeight - 1)
                 {
                     return true;
@@ -297,7 +271,6 @@ public class Tartris : MonoBehaviour
         }
         return false;
     }
-
     public bool IsFullRowAt(int y)
     {
         for (int x = 0; x < m_GridWidth; ++x)
@@ -310,7 +283,6 @@ public class Tartris : MonoBehaviour
         ++noRowsThisTurn;
         return true;
     }
-
     public void DeleteMinoAt(int y)
     {
         for (int x = 0; x < m_GridWidth; x++)
@@ -319,7 +291,6 @@ public class Tartris : MonoBehaviour
             grid[x, y] = null;
         }
     }
-
     public void MoveRowDown(int y)
     {
         for (int x = 0; x < m_GridWidth; x++)
@@ -332,7 +303,6 @@ public class Tartris : MonoBehaviour
             }
         }
     }
-
     public void MoveAllRowsDown(int y)
     {
         for (int i = y; i < m_GridHeight; ++i)
@@ -340,7 +310,6 @@ public class Tartris : MonoBehaviour
             MoveRowDown(i);
         }
     }
-
     public void DeleteRow()
     {
         for (int y = 0; y < m_GridHeight; ++y)
@@ -353,7 +322,6 @@ public class Tartris : MonoBehaviour
             }
         }
     }
-
     public void UpdateGrid(Tetromino tet)
     {
         for (int y = 0; y < m_GridHeight; ++y)
@@ -374,7 +342,7 @@ public class Tartris : MonoBehaviour
         {
             if (mino != tet.transform.GetChild(4))
             {
-                Vector2 pos = roundVec2(mino.position);
+                Vector2 pos = RoundVec2(mino.position);
                 if (pos.y < m_GridHeight)
                 {
                     grid[(int)pos.x, (int)pos.y] = mino;
@@ -413,22 +381,54 @@ public class Tartris : MonoBehaviour
         {
             gameStarted = true;
 
-            int i = GetRandomTartrimino();
-            tartriminoGO = InstantiateTartrimino(i, startingSpawnPosition);
+            activeColour = GetRandomTartrimino();
+            tartriminoGO = InstantiateTartrimino(activeColour, startingSpawnPosition);
+            SpawnGhostTARtrimino(activeColour);
 
-            i = GetRandomTartrimino();
-            previewTartriminoGO = InstantiateTartrimino(i, previewTartriminoPosition);
+            activeColour = GetRandomTartrimino();
+
+            previewTartriminoGO = InstantiateTartrimino(activeColour, previewTartriminoPosition);
             previewTartriminoGO.GetComponent<Tetromino>().enabled = false;
+            tartriminoGO.tag = "currentActiveTARtrimino";
+
+            //SpawnGhostTARtrimino(i);
         }
         else
         {
             tartriminoGO = previewTartriminoGO;
             tartriminoGO.GetComponent<Tetromino>().enabled = true;
+            SpawnGhostTARtrimino(activeColour);
+            updateGhost = true;
 
-            int i = GetRandomTartrimino();
-            previewTartriminoGO = InstantiateTartrimino(i, previewTartriminoPosition);
+            activeColour = GetRandomTartrimino();
+            previewTartriminoGO = InstantiateTartrimino(activeColour, previewTartriminoPosition);
             previewTartriminoGO.GetComponent<Tetromino>().enabled = false;
+            tartriminoGO.tag = "currentActiveTARtrimino";
         }
+        //updateGhost = true;
+    }
+
+    public void SpawnGhostTARtrimino(int i)
+    {
+        Destroy(GameObject.FindGameObjectWithTag("currentGhostTARtrimino"));
+
+        ghostTARtriminoGO = (GameObject)Instantiate(tartriminoGO, tartriminoGO.transform.position, Quaternion.identity);
+
+        Destroy(ghostTARtriminoGO.GetComponent<Tetromino>());
+        ghostTARtriminoGO.AddComponent<GhostTARtrimino>();
+
+        var renderers = ghostTARtriminoGO.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (MeshRenderer mr in renderers)
+        {
+            mr.material = materials[0];
+            mr.material.color = BlockColors[i];
+        }
+    }
+
+    public void DisableCurrentGhost()
+    {
+        ghostTARtriminoGO.transform.position += new Vector3(500, 500);
+        ghostTARtriminoGO.GetComponent<GhostTARtrimino>().enabled = false;
     }
 
     public GameObject InstantiateTartrimino(int tartriminoIndex, Vector3 tartriminoPosition)
@@ -449,7 +449,7 @@ public class Tartris : MonoBehaviour
         return (int)pos.x >= 0 && (int)pos.x < m_GridWidth && (int)pos.y >= 0;
     }
 
-    public Vector2 roundVec2(Vector2 v)
+    public Vector2 RoundVec2(Vector2 v)
     {
         return new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
     }

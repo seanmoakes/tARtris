@@ -17,13 +17,15 @@ public class Tetromino : MonoBehaviour
     protected bool isDownKeyHeld = false;
     protected bool isLeftKeyHeld = false;
     protected bool isRightKeyHeld = false;
-    bool hardDrop = false;
+   // bool hardDrop = false;
     protected Vector2 axes = new Vector2(0.0f, 0.0f);
 
     /* Current and desired states used in checking for viable position after a rotation
      * and to employ SRS style rotation for wall kicks etc */
     public RotateState currentRotation = RotateState.Zero;
     public RotateState desiredRotation = RotateState.Zero;
+    public RotationChecks rotationChecks;
+
 
     /* Audio clips for the different moves, and a source for playing them
      * Source is destroyed 1s after block is locked in place */
@@ -36,32 +38,60 @@ public class Tetromino : MonoBehaviour
     public AudioClip landSound;
     private AudioSource audioSource;
 
+    public int Children = 0;
+
     /* Movement variables */
     private float lateralDelay;
     private float LeftDelay;
     private float rightDelay;
-    private float lDelayRemaining;
-    private float rDelayRemaining;
+  //  private float lDelayRemaining;
+  //  private float rDelayRemaining;
     private float leftHeldTime = 0.0f;
     private float rightHeldTime = 0.0f;
     private float lateralSpeed = 0.05f;
     private float dropInterval;
-    private float dropDelta = 0.0f;
+ //   private float dropDelta = 0.0f;
+    private float lastDrop = 0.0f;
     private float softDropInterval;
     bool leftRepeat = false;
     bool rightRepeat = false;
 
+    private Tartris tartrisRef;
+
     public void Start()
     {
+        tartrisRef = FindObjectOfType<Tartris>();
         transform.position = SpawnPosition;
         audioSource = GetComponent<AudioSource>();
-        dropInterval = FindObjectOfType<Tartris>().GetDropSpeed();
+        dropInterval = tartrisRef.GetDropSpeed();
         softDropInterval = dropInterval / 20.0f;
-        lateralDelay = FindObjectOfType<Tartris>().horizontalDelay;
+        lateralDelay = tartrisRef.horizontalDelay;
         rightDelay = lateralDelay;
         LeftDelay = lateralDelay;
+        
     }
 
+    void Update()
+    {
+        UpdateMovement();
+        UpdateRotation();
+        Children = gameObject.transform.childCount;
+        if (gameObject.transform.childCount == 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+    private void UpdateRotation()
+    {
+        if (Input.GetKeyDown(KeyCode.B) || CrossPlatformInputManager.GetButtonDown("Clockwise"))
+        {
+            ClockWise();
+        }
+        if (Input.GetKeyDown(KeyCode.V) || CrossPlatformInputManager.GetButtonDown("AntiClockwise"))
+        {
+            AntiClockWise();
+        }
+    }
     /*****************/
     /* Movement Loop */
     /*****************/
@@ -86,7 +116,7 @@ public class Tetromino : MonoBehaviour
             rightRepeat = true;
             if (!leftRepeat)
             {
-                moveLeft();
+                MoveLeft();
                 leftRepeat = true;
             }
             else
@@ -100,7 +130,7 @@ public class Tetromino : MonoBehaviour
                     leftHeldTime += Time.deltaTime;
                     if (leftHeldTime >= lateralSpeed)
                     {
-                        moveLeft();
+                        MoveLeft();
                         leftHeldTime -= lateralSpeed;
                     }
                 }
@@ -113,7 +143,7 @@ public class Tetromino : MonoBehaviour
             leftRepeat = false;
             if (!rightRepeat)
             {
-                moveRight();
+                MoveRight();
                 rightRepeat = true;
             }
             else
@@ -127,7 +157,7 @@ public class Tetromino : MonoBehaviour
                     rightHeldTime += Time.deltaTime;
                     if (rightHeldTime >= lateralSpeed)
                     {
-                        moveRight();
+                        MoveRight();
                         rightHeldTime -= lateralSpeed;
                     }
                 }
@@ -135,45 +165,122 @@ public class Tetromino : MonoBehaviour
         }
         else
         {
-            leftHeldTime = 0;
+            leftHeldTime = 0.0f;
             LeftDelay = lateralDelay;
             leftRepeat = false;
-            rightHeldTime = 0;
+            rightHeldTime = 0.0f;
             rightDelay = lateralDelay;
             rightRepeat = false;
         }
     }
     private void UpdateVerticalMovement()
     {
-//         if (Input.GetKeyDown(KeyCode.D))
-//             hardDrop = true;
-        if(!hardDrop)
+        if (isDownKeyHeld || axes.y <= -0.5f) 
         {
-            float dropSpeed = isDownKeyHeld || axes.y < -0.5 ? softDropInterval : dropInterval;
-            
-            dropDelta += Time.deltaTime;
-            if (dropDelta >= dropSpeed)
+            if (Time.time - lastDrop >= softDropInterval)
             {
-                moveDown();
-                dropDelta -= dropSpeed;
+                MoveDown();
+                lastDrop = Time.time;
             }
         }
         else
         {
-            moveDown();
-            moveDown();
+            if (Time.time - lastDrop >= dropInterval)
+            {
+                MoveDown();
+                lastDrop = Time.time;
+            }
         }
     }
+
     private void UpdateMovementInputs()
     {
         axes = new Vector2(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
         isDownKeyHeld = Input.GetKey(KeyCode.DownArrow);
         isLeftKeyHeld = Input.GetKey(KeyCode.LeftArrow);
         isRightKeyHeld = Input.GetKey(KeyCode.RightArrow);
-        if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.DownArrow))
+        //if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.DownArrow))
+        //{
+        //    ResetDownVariables();
+        //}
+    }
+
+
+    public void ClockWise()
+    {
+        int[] testInputs = new int[10];
+        switch (currentRotation)
         {
-            ResetDownVariables();
+            case RotateState.Zero:
+                desiredRotation = RotateState.Right;
+                testInputs = rotationChecks?.ZeroClockwise;
+                break;
+            case RotateState.Right:
+                desiredRotation = RotateState.Two;
+                testInputs = rotationChecks?.RightClockwise;
+                break;
+            case RotateState.Two:
+                desiredRotation = RotateState.Left;
+                testInputs = rotationChecks?.TwoClockwise;
+                break;
+            case RotateState.Left:
+                desiredRotation = RotateState.Zero;
+                testInputs = rotationChecks?.LeftClockwise;
+                break;
         }
+        Vector3 pos = transform.GetChild(4).position;
+        transform.RotateAround(pos, Vector3.forward, -90.0f);
+
+        if (TestPositions(testInputs))
+        {
+            currentRotation = desiredRotation;
+            PlayRotateClkAudio();
+
+        }
+        else
+        {
+            transform.RotateAround(pos, Vector3.forward, 90.0f);
+            //PlayRotateErrorAudio();
+        }
+        tartrisRef.updateGhost = true;
+        tartrisRef.UpdateGrid(this);
+    }
+
+    public void AntiClockWise()
+    {
+        int[] testInputs = null;
+        switch (currentRotation)
+        {
+            case RotateState.Zero:
+                desiredRotation = RotateState.Left;
+                testInputs = rotationChecks?.ZeroAntiClockwise;
+                break;
+            case RotateState.Right:
+                desiredRotation = RotateState.Zero;
+                testInputs = rotationChecks?.RightAntiClockwise;
+                break;
+            case RotateState.Two:
+                desiredRotation = RotateState.Right;
+                testInputs = rotationChecks?.TwoAntiClockwise;
+                break;
+            case RotateState.Left:
+                desiredRotation = RotateState.Two;
+                testInputs = rotationChecks?.LeftAntiClockwise;
+                break;
+        }
+        Vector3 pos = transform.GetChild(4).position;
+        transform.RotateAround(pos, Vector3.forward, 90.0f);
+        if (TestPositions(testInputs))
+        {
+            currentRotation = desiredRotation;
+            PlayRotateAntiClkAudio();          
+        }
+        else
+        {
+            transform.RotateAround(pos, Vector3.forward, -90.0f);
+        }
+        tartrisRef.updateGhost = true;
+        tartrisRef.UpdateGrid(this);
     }
 
     /******************/
@@ -184,7 +291,7 @@ public class Tetromino : MonoBehaviour
         transform.position += new Vector3(x, y, 0);
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
             return true;
         }
         transform.position -= new Vector3(x, y, 0);
@@ -192,25 +299,28 @@ public class Tetromino : MonoBehaviour
     }
     public bool TestPositions(int[] testInputs)
     {
-        if (TestPosition(testInputs[0], testInputs[1]))
+        if (testInputs != null)
         {
-            return true;
-        }
-        else if (TestPosition(testInputs[2], testInputs[3]))
-        {
-            return true;
-        }
-        else if (TestPosition(testInputs[4], testInputs[5]))
-        {
-            return true;
-        }
-        else if (TestPosition(testInputs[6], testInputs[7]))
-        {
-            return true;
-        }
-        else if (TestPosition(testInputs[8], testInputs[9]))
-        {
-            return true;
+            if (TestPosition(testInputs[0], testInputs[1]))
+            {
+                return true;
+            }
+            else if (TestPosition(testInputs[2], testInputs[3]))
+            {
+                return true;
+            }
+            else if (TestPosition(testInputs[4], testInputs[5]))
+            {
+                return true;
+            }
+            else if (TestPosition(testInputs[6], testInputs[7]))
+            {
+                return true;
+            }
+            else if (TestPosition(testInputs[8], testInputs[9]))
+            {
+                return true;
+            }
         }
         return false;
     }
@@ -220,13 +330,13 @@ public class Tetromino : MonoBehaviour
         {
             if (mino != transform.GetChild(4))
             {
-                Vector2 pos = FindObjectOfType<Tartris>().roundVec2(mino.position);
-                if (FindObjectOfType<Tartris>().CheckIsInsideGrid(pos) == false)
+                Vector2 pos = tartrisRef.RoundVec2(mino.position);
+                if (tartrisRef.CheckIsInsideGrid(pos) == false)
                 {
                     return false;
                 }
 
-                if (FindObjectOfType<Tartris>().GetTransformAtGridPosition(pos) != null && FindObjectOfType<Tartris>().GetTransformAtGridPosition(pos).parent != transform)
+                if (tartrisRef.GetTransformAtGridPosition(pos) != null && tartrisRef.GetTransformAtGridPosition(pos).parent != transform)
                 {
                     return false;
                 }
@@ -238,46 +348,50 @@ public class Tetromino : MonoBehaviour
     /**********************/
     /* Movement Utilities */
     /**********************/
-    public void ResetDownVariables()
-    {
-        dropDelta = 0.0f;
-    }
-    public void moveDown()
+    //public void ResetDownVariables()
+    //{
+    //    dropDelta = 0.0f;
+    //}
+    public void MoveDown()
     {
         transform.position += new Vector3(0, -1, 0);
 
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
+            //tartrisRef.updateGhost = true;
         }
         else
         {
+            tartrisRef.updateGhost = false;
+            tartrisRef.DisableCurrentGhost();
             PlayLandAudio();
             Destroy(audioSource, 1f);
 
             transform.position += new Vector3(0, 1, 0);
 
-            Destroy(transform.GetChild(4).gameObject);
-
-            FindObjectOfType<Tartris>().DeleteRow();
-
-            if (FindObjectOfType<Tartris>().CheckIsAboveGrid(this))
+            gameObject.tag = "landedTARtrimino";
+            if (tartrisRef.CheckIsAboveGrid(this))
             {
-                FindObjectOfType<Tartris>().GameOver();
+                tartrisRef.GameOver();
             }
 
+            Destroy(transform.GetChild(4).gameObject);
+            transform.DetachChildren();
+            tartrisRef.DeleteRow();
+
             enabled = false;
-            hardDrop = false;
-            FindObjectOfType<Tartris>().SpawnNextTARtrimino();
+            tartrisRef.SpawnNextTARtrimino();
         }
     }
-    public void moveLeft()
+    public void MoveLeft()
     {
         transform.position += new Vector3(-1, 0, 0);
 
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
+            tartrisRef.updateGhost = true;
             PlayMoveLeftAudio();
         }
         else
@@ -285,13 +399,14 @@ public class Tetromino : MonoBehaviour
             transform.position += new Vector3(1, 0, 0);
         }
     }
-    public void moveRight()
+    public void MoveRight()
     {
         transform.position += new Vector3(1, 0, 0);
 
         if (CheckIsValidPosition())
         {
-            FindObjectOfType<Tartris>().UpdateGrid(this);
+            tartrisRef.UpdateGrid(this);
+            tartrisRef.updateGhost = true;
             PlayMoveRightAudio();
         }
         else
