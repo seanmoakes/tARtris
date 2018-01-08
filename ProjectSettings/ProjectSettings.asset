@@ -647,7 +647,7 @@ PlayerSettings:
   cloudServicesEnabled:
     UNet: 1
   facebookSdkVersion: 7.9.4
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 94dd1cb6-c425-4052-8c09-bfb67af691c2
   projectName: tetris
   organizationId: moakes_sean

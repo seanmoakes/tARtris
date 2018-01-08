@@ -65,6 +65,7 @@ public class Tartris : MonoBehaviour
     private Vector3 previewTartriminoPosition = new Vector3(14f, 15f);
 
     private bool gameStarted = false;
+    public bool updateGhost = true;
     private bool updateUINeeded = false;
 
     /// tartrimino variables
@@ -72,7 +73,9 @@ public class Tartris : MonoBehaviour
     private Queue<int> nextTartriminos = new Queue<int>();
     public GameObject[] TARtriminos;
     public Color[] BlockColors;
+    public Material[] materials;
     private MaterialPropertyBlock props;
+    private int activeColour;
 
     private void Awake()
     {
@@ -378,42 +381,53 @@ public class Tartris : MonoBehaviour
         {
             gameStarted = true;
 
-            int i = GetRandomTartrimino();
-            tartriminoGO = InstantiateTartrimino(i, startingSpawnPosition);
-            i = GetRandomTartrimino();
-            previewTartriminoGO = InstantiateTartrimino(i, previewTartriminoPosition);
+            activeColour = GetRandomTartrimino();
+            tartriminoGO = InstantiateTartrimino(activeColour, startingSpawnPosition);
+            SpawnGhostTARtrimino(activeColour);
+
+            activeColour = GetRandomTartrimino();
+
+            previewTartriminoGO = InstantiateTartrimino(activeColour, previewTartriminoPosition);
             previewTartriminoGO.GetComponent<Tetromino>().enabled = false;
             tartriminoGO.tag = "currentActiveTARtrimino";
 
-            SpawnGhostTARtrimino();
+            //SpawnGhostTARtrimino(i);
         }
         else
         {
             tartriminoGO = previewTartriminoGO;
             tartriminoGO.GetComponent<Tetromino>().enabled = true;
-            int i = GetRandomTartrimino();
-            previewTartriminoGO = InstantiateTartrimino(i, previewTartriminoPosition);
+            SpawnGhostTARtrimino(activeColour);
+            updateGhost = true;
+
+            activeColour = GetRandomTartrimino();
+            previewTartriminoGO = InstantiateTartrimino(activeColour, previewTartriminoPosition);
             previewTartriminoGO.GetComponent<Tetromino>().enabled = false;
             tartriminoGO.tag = "currentActiveTARtrimino";
-
-            SpawnGhostTARtrimino();
-
         }
+        //updateGhost = true;
     }
 
-    public void SpawnGhostTARtrimino()
+    public void SpawnGhostTARtrimino(int i)
     {
         Destroy(GameObject.FindGameObjectWithTag("currentGhostTARtrimino"));
 
         ghostTARtriminoGO = (GameObject)Instantiate(tartriminoGO, tartriminoGO.transform.position, Quaternion.identity);
 
         Destroy(ghostTARtriminoGO.GetComponent<Tetromino>());
-
         ghostTARtriminoGO.AddComponent<GhostTARtrimino>();
+
+        var renderers = ghostTARtriminoGO.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (MeshRenderer mr in renderers)
+        {
+            mr.material = materials[0];
+            mr.material.color = BlockColors[i];
+        }
     }
 
     public void DisableCurrentGhost()
     {
+        ghostTARtriminoGO.transform.position += new Vector3(500, 500);
         ghostTARtriminoGO.GetComponent<GhostTARtrimino>().enabled = false;
     }
 
