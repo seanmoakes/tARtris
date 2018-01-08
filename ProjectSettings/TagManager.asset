@@ -8,6 +8,7 @@ TagManager:
   - currentHeldTARtrimino
   - currentGhostTARtrimino
   - ARRoot
+  - landedTARtrimino
   layers:
   - Default
   - TransparentFX
