@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
 public class GameMenu : MonoBehaviour
 {
     public Text levelText;
@@ -14,7 +13,6 @@ public class GameMenu : MonoBehaviour
     void Start()
     {
         levelText.text = "1";
-
         hiscoreText.text = PlayerPrefs.GetInt("HighScore").ToString();
     }
 

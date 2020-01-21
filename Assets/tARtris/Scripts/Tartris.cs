@@ -81,10 +81,12 @@ public class Tartris : MonoBehaviour
     {
         Application.targetFrameRate = 60;
     }
+
     private float GetFallSpeed()
     {
         return Mathf.Pow((0.8f - (((float)currentLevel - 1f) * 0.007f)), (float)currentLevel - 1f);
     }
+
     private void Start()
     {
         // Difficulty - level based on selection in menu, and drop speed based on level
@@ -103,6 +105,7 @@ public class Tartris : MonoBehaviour
         // Spawn the first tartrimino
         SpawnNextTARtrimino();
     }
+
     public void Update()
     {
         UpdateScore();
@@ -116,6 +119,7 @@ public class Tartris : MonoBehaviour
             Reset();
         }
     }
+
     public void UpdateScore()
     {
         switch (noRowsThisTurn)
@@ -185,6 +189,7 @@ public class Tartris : MonoBehaviour
         }
         currentScore += score[(int)scoreThisTurn];
     }
+
     public void UpdateHighScore()
     {
         if (currentScore > startingHighScore)
@@ -192,6 +197,7 @@ public class Tartris : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", currentScore);
         }
     }
+
     public void UpdateLinesCleared()
     {
         switch (scoreThisTurn)
@@ -226,6 +232,7 @@ public class Tartris : MonoBehaviour
                 break;
         }
     }
+
     public void UpdateLevel()
     {
         var temp = currentLevel;
@@ -235,16 +242,19 @@ public class Tartris : MonoBehaviour
             UpdateSpeed();
         }
     }
+
     public void UpdateUI()
     {
         HUDScore.text = currentScore.ToString();
         HUDLevel.text = currentLevel.ToString();
         HUDLines.text = linesCleared.ToString();
     }
+
     public void UpdateSpeed()
     {
         DropSpeed = GetFallSpeed();
     }
+
     public void ResetPerTurnVariables()
     {
         scoreThisTurn = NoScore;
@@ -252,10 +262,12 @@ public class Tartris : MonoBehaviour
         noRowsThisTurn = 0;
         updateUINeeded = false;
     }
+
     public float GetDropSpeed()
     {
         return DropSpeed;
     }
+
     public bool CheckIsAboveGrid(Tetromino tetro)
     {
         for (int x = 0; x < m_GridWidth; ++x)
@@ -271,6 +283,7 @@ public class Tartris : MonoBehaviour
         }
         return false;
     }
+
     public bool IsFullRowAt(int y)
     {
         for (int x = 0; x < m_GridWidth; ++x)
@@ -283,6 +296,7 @@ public class Tartris : MonoBehaviour
         ++noRowsThisTurn;
         return true;
     }
+
     public void DeleteMinoAt(int y)
     {
         for (int x = 0; x < m_GridWidth; x++)
@@ -291,6 +305,7 @@ public class Tartris : MonoBehaviour
             grid[x, y] = null;
         }
     }
+
     public void MoveRowDown(int y)
     {
         for (int x = 0; x < m_GridWidth; x++)
@@ -303,6 +318,7 @@ public class Tartris : MonoBehaviour
             }
         }
     }
+
     public void MoveAllRowsDown(int y)
     {
         for (int i = y; i < m_GridHeight; ++i)
@@ -310,6 +326,7 @@ public class Tartris : MonoBehaviour
             MoveRowDown(i);
         }
     }
+
     public void DeleteRow()
     {
         for (int y = 0; y < m_GridHeight; ++y)
@@ -322,6 +339,7 @@ public class Tartris : MonoBehaviour
             }
         }
     }
+
     public void UpdateGrid(Tetromino tet)
     {
         for (int y = 0; y < m_GridHeight; ++y)

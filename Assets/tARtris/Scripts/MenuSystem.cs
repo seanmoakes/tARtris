@@ -10,8 +10,8 @@ public class MenuSystem : MonoBehaviour
         //AR
         SceneManager.LoadScene("tARtrisScene");
 
-        //Testing with other scene
-        //      SceneManager.LoadScene("tetris3d");
+        //Test with standard scene
+        //SceneManager.LoadScene("tetris3d");
     }
 
     public void ReturnToMenu()

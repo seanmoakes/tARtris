@@ -6,6 +6,7 @@ public class GhostTARtrimino : MonoBehaviour
 {
     private Tartris tartrisRef;
     Transform currentActiveTARtrimoTransform;
+
     void Start()
     {
         tartrisRef = FindObjectOfType<Tartris>();
@@ -19,6 +20,7 @@ public class GhostTARtrimino : MonoBehaviour
         //    }
         //}
     }
+
     void LateUpdate()
     {
         if (tartrisRef.updateGhost)
@@ -28,10 +30,9 @@ public class GhostTARtrimino : MonoBehaviour
             tartrisRef.updateGhost = false;
         }
     }
+
     void FollowActiveTARtrimino()
     {
-        //Transform currentActiveTARtrimoTransform = GameObject.FindGameObjectWithTag("currentActiveTARtrimino").transform;
-
         transform.position = currentActiveTARtrimoTransform.position;
         transform.rotation = currentActiveTARtrimoTransform.rotation;
     }
@@ -62,6 +63,7 @@ public class GhostTARtrimino : MonoBehaviour
                 }
             }
         }
+
         foreach (Transform mino in transform)
         {
             if (mino != transform.GetChild(4))
@@ -83,8 +85,8 @@ public class GhostTARtrimino : MonoBehaviour
                     }
                 }
             }
-
         }
+
         return true;
     }
 }
